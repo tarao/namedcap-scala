@@ -14,13 +14,13 @@ case class Pattern(patterns: Seq[String], groups: Seq[Group]) {
       zipped._1 + zipped._2
     }.mkString
 
-  def mapGroupsIn(instance: String)(f: Group => String => String): String = {
+  def mapGroupsIn(instance: String)(f: (Group, String) => String): String = {
     import Pattern.RegexOps
     val indexToGroup: Map[Int, Group] =
       allNamedGroups.zipWithIndex.map { case ((_, g), i) =>
         (i + 1) -> g
       }(scala.collection.breakOut)
-    r.mapGroupsIn(instance)(f compose indexToGroup)
+    r.mapGroupsIn(instance)(Function.uncurried(f.curried compose indexToGroup))
   }
 
   def r: Regex = mapGroups(_.r.toString).r
@@ -66,16 +66,18 @@ object Pattern extends Implicits {
     /** Returns a string in which matched portions in `instance` are
       * mapped by `f`.
       *
-      * `f` is a map from a group index to a map of matched portions.
+      * `f` is a map from a group index and a matched portion to a
+      * replacement.
       */
-    def mapGroupsIn(instance: String)(f: Int => String => String): String =
+    def mapGroupsIn(instance: String)(f: (Int, String) => String): String =
       regex.replaceAllIn(instance, { m =>
         val source = m.source.toString
         val whole = MapInstance(source, 0 until source.length)
         m.subgroups.zipWithIndex.foldLeft(whole) { (r, g) =>
           val i = g._2 + 1
           val start = m.start(i)
-          if (start >= 0) r.add(MapInstance(source, start until m.end(i), f(i)))
+          if (start >= 0)
+            r.add(MapInstance(source, start until m.end(i), f.curried(i)))
           else r
         }.toString
       })

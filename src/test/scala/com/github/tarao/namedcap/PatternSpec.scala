@@ -71,11 +71,11 @@ class PatternSpec extends FunSpec with Matchers
     describe(".mapGroupsIn") {
       it("should replace the matched portions") {
         val i1 = "/foo/hoge/http://example.com/"
-        p1.mapGroupsIn(i1)(g => s => s"<$g>$s</$g>") shouldBe
+        p1.mapGroupsIn(i1)((g, s) => s"<$g>$s</$g>") shouldBe
           "/foo/<Identifier>hoge</Identifier>/<Url>http://example.com/</Url>"
 
         val i2 = "/bar/-12345"
-        p2.mapGroupsIn(i2)(g => s => s"<$g>$s</$g>") shouldBe
+        p2.mapGroupsIn(i2)((g, s) => s"<$g>$s</$g>") shouldBe
           "/bar/<SignedNumber><Sign>-</Sign><UnsignedNumber>12345</UnsignedNumber></SignedNumber>"
 
       }

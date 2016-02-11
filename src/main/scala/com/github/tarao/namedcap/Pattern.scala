@@ -1,11 +1,13 @@
 package com.github.tarao.namedcap
 
+import scala.collection.mutable.{HashMap, ListBuffer}
 import scala.util.matching.Regex
 
 /** A class to describe a pattern. */
 case class Pattern(patterns: Seq[String], groups: Seq[Group]) {
   def groupNames(): Seq[String] = groups.flatMap(_.names)
   def namedGroups(): Seq[(String, Group)] = groups.flatMap(_.namedGroups)
+
   def allGroupNames(): Seq[String] = groups.flatMap(_.allNames)
   def allNamedGroups(): Seq[(String, Group)] = groups.flatMap(_.allNamedGroups)
 
@@ -24,6 +26,16 @@ case class Pattern(patterns: Seq[String], groups: Seq[Group]) {
   }
 
   def r: Regex = mapGroups(_.r.toString).r
+
+  def apply(instance: String): MultiMap = {
+    r.findFirstMatchIn(instance).map { m =>
+      val map = new HashMap[String, ListBuffer[String]]
+      (allNamedGroups, m.subgroups).zipped.foreach { case ((g, _), s) =>
+        Option(s).foreach(s => map.getOrElseUpdate(g, new ListBuffer) += s)
+      }
+      MultiMap(map)
+    }.getOrElse(MultiMap.empty)
+  }
 
   def +(other: Group): Pattern =
     Pattern(Seq("", ""), Seq(this, other))

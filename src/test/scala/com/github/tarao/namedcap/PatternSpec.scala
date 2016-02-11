@@ -19,6 +19,8 @@ class PatternSpec extends FunSpec with Matchers
   describe("Pattern") {
     val p1 = pattern"/foo/$Identifier/$Url"
     val p2 = pattern"/bar/$SignedNumber"
+    val p3 = pattern"/$Identifier/$Identifier/$Url"
+    val p4 = pattern"/foo(?:/$Identifier)?/$Url"
 
     it("should be instantiated by the interpolation") {
       p1.r.toString shouldBe "/foo/([a-zA-Z0-9][a-zA-Z0-9_-]*)/(https?://.*)"
@@ -26,49 +28,57 @@ class PatternSpec extends FunSpec with Matchers
     }
 
     describe(".groupNames") {
-      p1.groupNames should contain theSameElementsAs Seq("Identifier", "Url")
-      p2.groupNames should contain theSameElementsAs Seq("SignedNumber")
+      it("should return name and group pairs") {
+        p1.groupNames should contain theSameElementsAs Seq("Identifier", "Url")
+        p2.groupNames should contain theSameElementsAs Seq("SignedNumber")
+      }
     }
 
     describe(".allGroupNames") {
-      p1.allGroupNames should contain theSameElementsAs Seq(
-        "Identifier",
-        "Url"
-      )
-      p2.allGroupNames should contain theSameElementsAs Seq(
-        "SignedNumber",
-        "Sign",
-        "UnsignedNumber"
-      )
+      it("should return nested group names") {
+        p1.allGroupNames should contain theSameElementsAs Seq(
+          "Identifier",
+          "Url"
+        )
+        p2.allGroupNames should contain theSameElementsAs Seq(
+          "SignedNumber",
+          "Sign",
+          "UnsignedNumber"
+        )
+      }
     }
 
     describe(".namedGroups") {
-      p1.namedGroups.map(pair => pair._1 -> pair._2.r.toString) should
-        contain theSameElementsAs Seq(
-          "Identifier" -> "([a-zA-Z0-9][a-zA-Z0-9_-]*)",
-          "Url" -> "(https?://.*)"
-        )
-      p2.namedGroups.map(pair => pair._1 -> pair._2.r.toString) should
-        contain theSameElementsAs Seq(
-          "SignedNumber" -> "(([-+])([1-9][0-9]*))"
-        )
+      it("should return name and group pairs") {
+        p1.namedGroups.map(pair => pair._1 -> pair._2.r.toString) should
+          contain theSameElementsAs Seq(
+            "Identifier" -> "([a-zA-Z0-9][a-zA-Z0-9_-]*)",
+            "Url" -> "(https?://.*)"
+          )
+        p2.namedGroups.map(pair => pair._1 -> pair._2.r.toString) should
+          contain theSameElementsAs Seq(
+            "SignedNumber" -> "(([-+])([1-9][0-9]*))"
+          )
+      }
     }
 
     describe(".allNamedGroups") {
-      p1.allNamedGroups.map(pair => pair._1 -> pair._2.r.toString) should
-        contain theSameElementsAs Seq(
-          "Identifier" -> "([a-zA-Z0-9][a-zA-Z0-9_-]*)",
-          "Url" -> "(https?://.*)"
-        )
-      p2.allNamedGroups.map(pair => pair._1 -> pair._2.r.toString) should
-        contain theSameElementsAs Seq(
-          "SignedNumber" -> "(([-+])([1-9][0-9]*))",
-          "Sign" -> "([-+])",
-          "UnsignedNumber" -> "([1-9][0-9]*)"
-        )
+      it("should return name and nested group pairs") {
+        p1.allNamedGroups.map(pair => pair._1 -> pair._2.r.toString) should
+          contain theSameElementsAs Seq(
+            "Identifier" -> "([a-zA-Z0-9][a-zA-Z0-9_-]*)",
+            "Url" -> "(https?://.*)"
+          )
+        p2.allNamedGroups.map(pair => pair._1 -> pair._2.r.toString) should
+          contain theSameElementsAs Seq(
+            "SignedNumber" -> "(([-+])([1-9][0-9]*))",
+            "Sign" -> "([-+])",
+            "UnsignedNumber" -> "([1-9][0-9]*)"
+          )
+      }
     }
 
-    describe(".mapGroupsIn") {
+    describe(".mapGroupsIn()") {
       it("should replace the matched portions") {
         val i1 = "/foo/hoge/http://example.com/"
         p1.mapGroupsIn(i1)((g, s) => s"<$g>$s</$g>") shouldBe
@@ -81,18 +91,61 @@ class PatternSpec extends FunSpec with Matchers
       }
     }
 
+    describe(".apply()") {
+      it("should return empty result for unmatched string") {
+        val s = "foo bar"
+        p1(s) shouldBe empty
+      }
+
+      it("should return matched portions by group names") {
+        val i1 = "/foo/hoge/http://example.com/"
+        val m1 = p1(i1)
+        m1.size shouldBe 2
+        m1("Identifier") shouldBe "hoge"
+        m1("Url") shouldBe "http://example.com/"
+
+        val i2 = "/bar/-12345"
+        val m2 = p2(i2)
+        m2.size shouldBe 3
+        m2("SignedNumber") shouldBe "-12345"
+        m2("Sign") shouldBe "-"
+        m2("UnsignedNumber") shouldBe "12345"
+      }
+
+      it("should return multiple matches") {
+        val i3 = "/foo/hoge/http://example.com/"
+        val m3 = p3(i3)
+        m3.size shouldBe 2
+        m3("Identifier") shouldBe "foo"
+        m3.getAll("Identifier") shouldBe Seq("foo", "hoge")
+        m3("Url") shouldBe "http://example.com/"
+      }
+
+      it("should skip unmatched group") {
+        val i4 = "/foo/http://example.com/"
+        val m4 = p4(i4)
+        m4.size shouldBe 1
+        m4.get("Identifier") shouldBe None
+        m4("Url") shouldBe "http://example.com/"
+      }
+    }
+
     describe(".toString") {
-      p1.toString shouldBe "/foo/${Identifier}/${Url}"
-      p2.toString shouldBe "/bar/${SignedNumber}"
+      it("should describe the pattern with group names") {
+        p1.toString shouldBe "/foo/${Identifier}/${Url}"
+        p2.toString shouldBe "/bar/${SignedNumber}"
+      }
     }
 
     describe("+") {
-      (p1 + "hoge").r.toString shouldBe
-        "/foo/([a-zA-Z0-9][a-zA-Z0-9_-]*)/(https?://.*)hoge"
-      (p1 + "hoge").toString shouldBe "/foo/${Identifier}/${Url}hoge"
-      (p1 + p2).r.toString shouldBe
-        "/foo/([a-zA-Z0-9][a-zA-Z0-9_-]*)/(https?://.*)/bar/(([-+])([1-9][0-9]*))"
-      (p1 + p2).toString shouldBe "/foo/${Identifier}/${Url}/bar/${SignedNumber}"
+      it("should concatenate two patterns") {
+        (p1 + "hoge").r.toString shouldBe
+          "/foo/([a-zA-Z0-9][a-zA-Z0-9_-]*)/(https?://.*)hoge"
+        (p1 + "hoge").toString shouldBe "/foo/${Identifier}/${Url}hoge"
+        (p1 + p2).r.toString shouldBe
+          "/foo/([a-zA-Z0-9][a-zA-Z0-9_-]*)/(https?://.*)/bar/(([-+])([1-9][0-9]*))"
+        (p1 + p2).toString shouldBe "/foo/${Identifier}/${Url}/bar/${SignedNumber}"
+      }
     }
 
     it("should be able to embed a pattern into another pattern") {

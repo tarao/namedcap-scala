@@ -59,7 +59,7 @@ object Group {
   * captured as a group like one definition by `Pattern`.
   */
 abstract class NestedGroup(p: Pattern) extends Group(p.r.toString) {
-  override def allNames(): Seq[String] = name +: p.allGroupNames
+  override def allNames(): Seq[String] = super.allNames ++ p.allGroupNames
   override def allNamedGroups(): Seq[(String, Group)] =
     super.allNamedGroups ++ p.allNamedGroups
 }

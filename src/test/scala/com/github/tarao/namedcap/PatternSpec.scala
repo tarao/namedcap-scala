@@ -2,7 +2,7 @@ package com.github.tarao.namedcap
 
 import org.scalatest.{FunSpec, Matchers, OptionValues, Inside, Inspectors}
 
-object PatternExample extends Pattern.Interpolation.Implicits {
+object PatternExample extends Implicits {
   import Pattern._
   case object Url extends Group("https?://.*")
   case object Identifier extends Group("[a-zA-Z0-9][a-zA-Z0-9_-]*")

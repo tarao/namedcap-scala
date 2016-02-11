@@ -3,24 +3,20 @@ package com.github.tarao.namedcap
 import scala.util.matching.Regex
 
 /** A class to describe a pattern. */
-case class Pattern(patterns: Seq[String], groups: Seq[Pattern.Group]) {
+case class Pattern(patterns: Seq[String], groups: Seq[Group]) {
   def groupNames(): Seq[String] = groups.flatMap(_.names)
-  def namedGroups(): Seq[(String, Pattern.Group)] =
-    groups.flatMap(_.namedGroups)
+  def namedGroups(): Seq[(String, Group)] = groups.flatMap(_.namedGroups)
   def allGroupNames(): Seq[String] = groups.flatMap(_.allNames)
-  def allNamedGroups(): Seq[(String, Pattern.Group)] =
-    groups.flatMap(_.allNamedGroups)
+  def allNamedGroups(): Seq[(String, Group)] = groups.flatMap(_.allNamedGroups)
 
-  def mapGroups(f: Pattern.Group => String): String =
+  def mapGroups(f: Group => String): String =
     patterns.zipAll(groups.map(_.mapGroups(f)), "", "").map { zipped =>
       zipped._1 + zipped._2
     }.mkString
 
-  def mapGroupsIn(instance: String)(
-    f: Pattern.Group => String => String
-  ): String = {
+  def mapGroupsIn(instance: String)(f: Group => String => String): String = {
     import Pattern.RegexOps
-    val indexToGroup: Map[Int, Pattern.Group] =
+    val indexToGroup: Map[Int, Group] =
       allNamedGroups.zipWithIndex.map { case ((_, g), i) =>
         (i + 1) -> g
       }(scala.collection.breakOut)
@@ -29,107 +25,16 @@ case class Pattern(patterns: Seq[String], groups: Seq[Pattern.Group]) {
 
   def r: Regex = mapGroups(_.r.toString).r
 
-  def +(other: Pattern.Group): Pattern =
+  def +(other: Group): Pattern =
     Pattern(Seq("", ""), Seq(this, other))
   def +(other: String): Pattern = Pattern(Seq("", other), Seq(this))
 
   override def toString(): String = mapGroups {
-    case Pattern.UnnamedGroup(p) => p.toString
+    case UnnamedGroup(p) => p.toString
     case g => s"$${${g.name}}"
   }
 }
-object Pattern {
-  /** A class to represent a group of pattern.
-    *
-    * This class is inteded to declare a named pattern by extending the
-    * class to a case object.  For example,
-    *
-    * {{{
-    * case object SomeName extends Group("[a-z]+")
-    * }}}
-    *
-    * `SomeName` defines a pattern matches with lower case alphabets
-    * captured as a group.  The name of the group defaults to the value
-    * of `SomeName.toString`.  Note that the default value of `toString`
-    * for a case object is the name of the object, which is `"SomeName"`
-    * in this example.
-    */
-  abstract class Group(val pattern: String) {
-    /** Returns the defined pattern. */
-    def r: Regex = s"($pattern)".r
-
-    /** Returns the group name */
-    def name: String = toString
-
-    /** Returns the group names of subpatterns. */
-    def names(): Seq[String] = Seq(name)
-
-    /** Returns subpatterns with their names. */
-    def namedGroups(): Seq[(String, Group)] = Seq(name -> this)
-
-    /** Returns all the group names of subpatterns. */
-    def allNames(): Seq[String] = Seq(name)
-
-    /** Returns all subpatterns with their names. */
-    def allNamedGroups(): Seq[(String, Group)] = Seq(name -> this)
-
-    def mapGroups(f: Group => String): String = f(this)
-  }
-  object Group {
-    val empty = UnnamedGroup(Pattern(Seq.empty, Seq.empty))
-  }
-
-  /** A class to make a named pattern representation from a `Pattern`.
-    *
-    * This class is inteded to declare a named pattern by extending the
-    * class to a case object, with a `Pattern`, which may include some
-    * named subpatterns.  For example, assuming that `pattern`
-    * interpolation generates a `Pattern` with some named patterns
-    * embedded,
-    *
-    * {{{
-    * case object SomeName
-    *     extends CompoundPattern(pattern"/\$AnotherName/\$YetAnotherName")
-    * }}}
-    *
-    * `SomeName` defines a named pattern matches with the whole pattern
-    * captured as a group like one definition by `Pattern`.
-    */
-  abstract class NestedGroup(p: Pattern) extends Group(p.r.toString) {
-    override def allNames(): Seq[String] = name +: p.allGroupNames
-    override def allNamedGroups(): Seq[(String, Group)] =
-      super.allNamedGroups ++ p.allNamedGroups
-  }
-
-  /** A class to make an unnamed pattern representation from a `Pattern`.
-    *
-    * This class is quite the same as `CompoundPattern` except that the
-    * whole pattern does neither have a name nor captured as a group.
-    */
-  case class UnnamedGroup(p: Pattern) extends Group(p.r.toString) {
-    override def r: Regex = pattern.r
-    override def names(): Seq[String] = p.groupNames
-    override def namedGroups(): Seq[(String, Group)] = p.namedGroups
-    override def allNames(): Seq[String] = p.allGroupNames
-    override def allNamedGroups(): Seq[(String, Group)] = p.allNamedGroups
-    override def mapGroups(f: Group => String): String = p.mapGroups(f)
-  }
-
-  implicit val patternToGroup: Pattern => Group = UnnamedGroup(_)
-
-  /** An interpolation for named patterns. */
-  class Interpolation(val sc: StringContext) extends AnyVal {
-    /** Binds named patterns to their captured groups as a `Pattern`. */
-    def pattern(args: Group*): Pattern = Pattern(sc.parts, args)
-  }
-  object Interpolation {
-    trait Implicits {
-      implicit val patternInterpolation: StringContext => Interpolation =
-        new Interpolation(_)
-    }
-    object Implicits extends Implicits
-  }
-
+object Pattern extends Implicits {
   private case class MapInstance(
     instance: String,
     range: Range,

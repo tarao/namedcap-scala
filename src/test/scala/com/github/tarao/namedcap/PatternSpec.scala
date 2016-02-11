@@ -25,6 +25,7 @@ class PatternSpec extends FunSpec with Matchers
     it("should be instantiated by the interpolation") {
       p1.r.toString shouldBe "/foo/([a-zA-Z0-9][a-zA-Z0-9_-]*)/(https?://.*)"
       p2.r.toString shouldBe "/bar/(([-+])([1-9][0-9]*))"
+      pattern"$p1".r.toString shouldBe "/foo/([a-zA-Z0-9][a-zA-Z0-9_-]*)/(https?://.*)"
     }
 
     describe(".groupNames") {
@@ -134,6 +135,7 @@ class PatternSpec extends FunSpec with Matchers
       it("should describe the pattern with group names") {
         p1.toString shouldBe "/foo/${Identifier}/${Url}"
         p2.toString shouldBe "/bar/${SignedNumber}"
+        pattern"$p1".toString shouldBe "/foo/${Identifier}/${Url}"
       }
     }
 

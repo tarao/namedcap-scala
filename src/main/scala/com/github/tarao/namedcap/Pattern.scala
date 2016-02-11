@@ -130,28 +130,28 @@ object Pattern {
     object Implicits extends Implicits
   }
 
-  private case class InstanceMap(
+  private case class MapInstance(
     instance: String,
     range: Range,
     f: String => String = identity,
-    children: Seq[InstanceMap] = Seq.empty
+    children: Seq[MapInstance] = Seq.empty
   ) {
-    def containsInChildren(other: InstanceMap): Boolean =
+    def containsInChildren(other: MapInstance): Boolean =
       children.exists(_.contains(other))
-    def contains(other: InstanceMap): Boolean =
+    def contains(other: MapInstance): Boolean =
       range.contains(other.range.start) || containsInChildren(other)
-    def add(child: InstanceMap): InstanceMap =
+    def add(child: MapInstance): MapInstance =
       if (containsInChildren(child)) copy(children = children.map(_.add(child)))
       else copy(children = child +: children)
     override def toString(): String =
       if (range.isEmpty) f("")
       else if (children.isEmpty) f(instance.substring(range.start, range.end))
       else {
-        val start = InstanceMap(instance, range.start until range.start)
-        val end = InstanceMap(instance, range.end until range.end)
+        val start = MapInstance(instance, range.start until range.start)
+        val end = MapInstance(instance, range.end until range.end)
         val sorted = (start +: end +: children).sortBy(_.range.start)
         val filled = sorted.sliding(2, 1).flatMap { case Seq(a, b) =>
-          Seq(a, InstanceMap(instance, a.range.end until b.range.start))
+          Seq(a, MapInstance(instance, a.range.end until b.range.start))
         }.toSeq.tail
         f(filled.mkString)
       }
@@ -166,11 +166,11 @@ object Pattern {
     def mapGroupsIn(instance: String)(f: Int => String => String): String =
       regex.replaceAllIn(instance, { m =>
         val source = m.source.toString
-        val whole = InstanceMap(source, 0 until source.length)
+        val whole = MapInstance(source, 0 until source.length)
         m.subgroups.zipWithIndex.foldLeft(whole) { (r, g) =>
           val i = g._2 + 1
           val start = m.start(i)
-          if (start >= 0) r.add(InstanceMap(source, start until m.end(i), f(i)))
+          if (start >= 0) r.add(MapInstance(source, start until m.end(i), f(i)))
           else r
         }.toString
       })

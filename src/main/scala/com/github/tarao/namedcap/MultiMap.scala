@@ -9,6 +9,12 @@ object MultiMap {
   val empty = MultiMap()
 }
 
+/** A map that can store multiple values with the same key.
+  *
+  * It returns multiple values by `getAll()` method.  All the other
+  * methods are the same as single-valued maps; `apply()` or `get()`
+  * returns the first value.
+  */
 class MultiMap(m: Map[String, Seq[String]])
     extends ImmutableMap[String, String] {
   def get(key: String): Option[String] = m.get(key).flatMap(_.headOption)

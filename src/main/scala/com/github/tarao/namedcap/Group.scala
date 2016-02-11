@@ -39,6 +39,8 @@ abstract class Group(val pattern: String) {
   def mapGroups(f: Group => String): String = f(this)
 }
 object Group {
+  def apply(groupName: String, pattern: String): Group =
+    new Group(pattern) { override def name: String = groupName }
   val empty = UnnamedGroup(Pattern(Seq.empty, Seq.empty))
 }
 
@@ -62,6 +64,10 @@ abstract class NestedGroup(p: Pattern) extends Group(p.r.toString) {
   override def allNames(): Seq[String] = super.allNames ++ p.allGroupNames
   override def allNamedGroups(): Seq[(String, Group)] =
     super.allNamedGroups ++ p.allNamedGroups
+}
+object NestedGroup {
+  def apply(groupName: String, pattern: Pattern): Group =
+    new NestedGroup(pattern) { override def name: String = groupName }
 }
 
 /** A class to make an unnamed pattern representation from a `Pattern`.

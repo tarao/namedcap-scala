@@ -6,11 +6,12 @@ lazy val namedcap = (project in file(".")).
     name := "namedcap",
     organization := "com.github.tarao",
     version := "0.0.1",
-    scalaVersion := "2.11.7",
+    scalaVersion := "2.11.11",
+    crossScalaVersions := Seq("2.11.11", "2.12.3"),
 
     // Depenency
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "2.2.6" % "test"
+      "org.scalatest" %% "scalatest" % "3.0.3" % "test"
     ),
 
     // Compilation

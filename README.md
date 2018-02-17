@@ -20,7 +20,7 @@ Add dependency in your `build.sbt` as the following.
 ```
 
 The library is available on [Maven Central][maven].  Currently,
-supported Scala version is 2.11.
+supported Scala versions are 2.11 and 2.12.
 
 Basic usage
 -----------
@@ -138,9 +138,9 @@ License
 [travis-img]: https://img.shields.io/travis/tarao/namedcap-scala.svg?branch=master
 [coverage]: https://coveralls.io/github/tarao/namedcap-scala?branch=master
 [coverage-img]: https://coveralls.io/repos/tarao/namedcap-scala/badge.svg?branch=master&service=github
-[maven]: https://maven-badges.herokuapp.com/maven-central/com.github.tarao/namedcap_2.11
-[maven-img]: https://maven-badges.herokuapp.com/maven-central/com.github.tarao/namedcap_2.11/badge.svg
-[javadoc]: http://javadoc-badge.appspot.com/com.github.tarao/namedcap_2.11
-[javadoc-img]: http://javadoc-badge.appspot.com/com.github.tarao/namedcap_2.11.svg?label=scaladoc
+[maven]: https://maven-badges.herokuapp.com/maven-central/com.github.tarao/namedcap_2.12
+[maven-img]: https://maven-badges.herokuapp.com/maven-central/com.github.tarao/namedcap_2.12/badge.svg
+[javadoc]: http://javadoc-badge.appspot.com/com.github.tarao/namedcap_2.12
+[javadoc-img]: http://javadoc-badge.appspot.com/com.github.tarao/namedcap_2.12.svg?label=scaladoc
 
 [java-regex]: https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html

@@ -68,7 +68,7 @@ case class Pattern(patterns: Seq[String], groups: Seq[Group]) {
   def apply(instance: String): MultiMap = {
     r.findFirstMatchIn(instance).map { m =>
       val map = new HashMap[String, ListBuffer[String]]
-      (allNamedGroups, m.subgroups).zipped.foreach { case ((g, _), s) =>
+      allNamedGroups.lazyZip(m.subgroups).foreach { case ((g, _), s) =>
         Option(s).foreach(s => map.getOrElseUpdate(g, new ListBuffer) += s)
       }
       MultiMap(map)

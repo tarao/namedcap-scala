@@ -44,9 +44,9 @@ case class Pattern(patterns: Seq[String], groups: Seq[Group]) {
   def mapGroupsIn(instance: String)(f: (Group, String) => String): String = {
     import Pattern.RegexOps
     val indexToGroup: Map[Int, Group] =
-      allNamedGroups.zipWithIndex.map { case ((_, g), i) =>
+      allNamedGroups.view.zipWithIndex.map { case ((_, g), i) =>
         (i + 1) -> g
-      }(scala.collection.breakOut)
+      }.toMap
     r.mapGroupsIn(instance)(Function.uncurried(f.curried compose indexToGroup))
   }
 

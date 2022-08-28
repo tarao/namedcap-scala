@@ -1,6 +1,8 @@
 package com.github.tarao.namedcap
 
-import org.scalatest.{FunSpec, Matchers, OptionValues, Inside, Inspectors}
+import org.scalatest.{OptionValues, Inside, Inspectors}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 object PatternExample extends Implicits {
   import Pattern._
@@ -12,7 +14,7 @@ object PatternExample extends Implicits {
 
 }
 
-class PatternSpec extends FunSpec with Matchers
+class PatternSpec extends AnyFunSpec with Matchers
     with OptionValues with Inside with Inspectors {
   import PatternExample._
 

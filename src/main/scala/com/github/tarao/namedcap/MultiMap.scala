@@ -21,10 +21,10 @@ class MultiMap(m: Map[String, Seq[String]])
   def getAll(key: String): Seq[String] = m.getOrElse(key, Seq.empty)
   def iterator: Iterator[(String, String)] =
     m.iterator.flatMap(kv => kv._2.headOption.map(kv._1 -> _))
-  def removed(key: String): MultiMap = new MultiMap(m - key)
+  def removed(key: String): MultiMap = new MultiMap(m.to(ImmutableMap) - key)
   def updated[V1 >: String](key: String, value: V1): MultiMap = {
     val list = m.getOrElse(key, Seq.empty) :+ value.asInstanceOf[String]
-    new MultiMap(m + (key -> list))
+    new MultiMap(m ++ Map(key -> list))
   }
   override def +[V >: String](kv: (String, V)): MultiMap = {
     val (key, value) = kv

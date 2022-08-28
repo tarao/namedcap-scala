@@ -68,9 +68,9 @@ object Group {
   * captured as a group like one definition by `Pattern`.
   */
 abstract class NestedGroup(p: Pattern) extends Group(p.r.toString) {
-  override def allNames(): Seq[String] = super.allNames ++ p.allGroupNames
+  override def allNames(): Seq[String] = super.allNames() ++ p.allGroupNames()
   override def allNamedGroups(): Seq[(String, Group)] =
-    super.allNamedGroups ++ p.allNamedGroups
+    super.allNamedGroups() ++ p.allNamedGroups()
 }
 object NestedGroup {
   /** Make a nested group instance with a specific name.
@@ -89,9 +89,9 @@ object NestedGroup {
   */
 case class UnnamedGroup(p: Pattern) extends Group(p.r.toString) {
   override def r: Regex = pattern.r
-  override def names(): Seq[String] = p.groupNames
-  override def namedGroups(): Seq[(String, Group)] = p.namedGroups
-  override def allNames(): Seq[String] = p.allGroupNames
-  override def allNamedGroups(): Seq[(String, Group)] = p.allNamedGroups
+  override def names(): Seq[String] = p.groupNames()
+  override def namedGroups(): Seq[(String, Group)] = p.namedGroups()
+  override def allNames(): Seq[String] = p.allGroupNames()
+  override def allNamedGroups(): Seq[(String, Group)] = p.allNamedGroups()
   override def mapGroups(f: Group => String): String = p.mapGroups(f)
 }

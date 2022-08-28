@@ -30,20 +30,20 @@ class PatternSpec extends AnyFunSpec with Matchers
       pattern"$p1".r.toString shouldBe "/foo/([a-zA-Z0-9][a-zA-Z0-9_-]*)/(https?://.*)"
     }
 
-    describe(".groupNames") {
+    describe(".groupNames()") {
       it("should return name and group pairs") {
-        p1.groupNames should contain theSameElementsAs Seq("Identifier", "Url")
-        p2.groupNames should contain theSameElementsAs Seq("SignedNumber")
+        p1.groupNames() should contain theSameElementsAs Seq("Identifier", "Url")
+        p2.groupNames() should contain theSameElementsAs Seq("SignedNumber")
       }
     }
 
-    describe(".allGroupNames") {
+    describe(".allGroupNames()") {
       it("should return nested group names") {
-        p1.allGroupNames should contain theSameElementsAs Seq(
+        p1.allGroupNames() should contain theSameElementsAs Seq(
           "Identifier",
           "Url"
         )
-        p2.allGroupNames should contain theSameElementsAs Seq(
+        p2.allGroupNames() should contain theSameElementsAs Seq(
           "SignedNumber",
           "Sign",
           "UnsignedNumber"
@@ -51,28 +51,28 @@ class PatternSpec extends AnyFunSpec with Matchers
       }
     }
 
-    describe(".namedGroups") {
+    describe(".namedGroups()") {
       it("should return name and group pairs") {
-        p1.namedGroups.map(pair => pair._1 -> pair._2.r.toString) should
+        p1.namedGroups().map(pair => pair._1 -> pair._2.r.toString) should
           contain theSameElementsAs Seq(
             "Identifier" -> "([a-zA-Z0-9][a-zA-Z0-9_-]*)",
             "Url" -> "(https?://.*)"
           )
-        p2.namedGroups.map(pair => pair._1 -> pair._2.r.toString) should
+        p2.namedGroups().map(pair => pair._1 -> pair._2.r.toString) should
           contain theSameElementsAs Seq(
             "SignedNumber" -> "(([-+])([1-9][0-9]*))"
           )
       }
     }
 
-    describe(".allNamedGroups") {
+    describe(".allNamedGroups()") {
       it("should return name and nested group pairs") {
-        p1.allNamedGroups.map(pair => pair._1 -> pair._2.r.toString) should
+        p1.allNamedGroups().map(pair => pair._1 -> pair._2.r.toString) should
           contain theSameElementsAs Seq(
             "Identifier" -> "([a-zA-Z0-9][a-zA-Z0-9_-]*)",
             "Url" -> "(https?://.*)"
           )
-        p2.allNamedGroups.map(pair => pair._1 -> pair._2.r.toString) should
+        p2.allNamedGroups().map(pair => pair._1 -> pair._2.r.toString) should
           contain theSameElementsAs Seq(
             "SignedNumber" -> "(([-+])([1-9][0-9]*))",
             "Sign" -> "([-+])",
@@ -157,17 +157,17 @@ class PatternSpec extends AnyFunSpec with Matchers
       p3.r.toString shouldBe
         "/baz/foo/([a-zA-Z0-9][a-zA-Z0-9_-]*)/(https?://.*)"
       p3.toString shouldBe "/baz/foo/${Identifier}/${Url}"
-      p3.groupNames should contain theSameElementsAs Seq("Identifier", "Url")
-      p3.namedGroups.map(pair => pair._1 -> pair._2.r.toString) should
+      p3.groupNames() should contain theSameElementsAs Seq("Identifier", "Url")
+      p3.namedGroups().map(pair => pair._1 -> pair._2.r.toString) should
         contain theSameElementsAs Seq(
           "Identifier" -> "([a-zA-Z0-9][a-zA-Z0-9_-]*)",
           "Url" -> "(https?://.*)"
         )
-      p3.allGroupNames should contain theSameElementsAs Seq(
+      p3.allGroupNames() should contain theSameElementsAs Seq(
         "Identifier",
         "Url"
       )
-      p3.allNamedGroups.map(pair => pair._1 -> pair._2.r.toString) should
+      p3.allNamedGroups().map(pair => pair._1 -> pair._2.r.toString) should
         contain theSameElementsAs Seq(
           "Identifier" -> "([a-zA-Z0-9][a-zA-Z0-9_-]*)",
           "Url" -> "(https?://.*)"
@@ -178,25 +178,25 @@ class PatternSpec extends AnyFunSpec with Matchers
         "/foo/([a-zA-Z0-9][a-zA-Z0-9_-]*)/(https?://.*) or /bar/(([-+])([1-9][0-9]*))"
       p4.toString shouldBe
         "/foo/${Identifier}/${Url} or /bar/${SignedNumber}"
-      p4.groupNames should contain theSameElementsAs Seq(
+      p4.groupNames() should contain theSameElementsAs Seq(
         "Identifier",
         "Url",
         "SignedNumber"
       )
-      p4.namedGroups.map(pair => pair._1 -> pair._2.r.toString) should
+      p4.namedGroups().map(pair => pair._1 -> pair._2.r.toString) should
         contain theSameElementsAs Seq(
           "Identifier" -> "([a-zA-Z0-9][a-zA-Z0-9_-]*)",
           "Url" -> "(https?://.*)",
           "SignedNumber" -> "(([-+])([1-9][0-9]*))"
         )
-      p4.allGroupNames should contain theSameElementsAs Seq(
+      p4.allGroupNames() should contain theSameElementsAs Seq(
         "Identifier",
         "Url",
         "SignedNumber",
         "Sign",
         "UnsignedNumber"
       )
-      p4.allNamedGroups.map(pair => pair._1 -> pair._2.r.toString) should
+      p4.allNamedGroups().map(pair => pair._1 -> pair._2.r.toString) should
         contain theSameElementsAs Seq(
           "Identifier" -> "([a-zA-Z0-9][a-zA-Z0-9_-]*)",
           "Url" -> "(https?://.*)",

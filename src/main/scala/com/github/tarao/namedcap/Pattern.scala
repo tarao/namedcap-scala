@@ -9,25 +9,25 @@ case class Pattern(patterns: Seq[String], groups: Seq[Group]) {
     *
     * No nested group is listed.
     */
-  def groupNames(): Seq[String] = groups.flatMap(_.names)
+  def groupNames(): Seq[String] = groups.flatMap(_.names())
 
   /** Returns named capturing groups with their names.
     *
     * No nested group is listed.
     */
-  def namedGroups(): Seq[(String, Group)] = groups.flatMap(_.namedGroups)
+  def namedGroups(): Seq[(String, Group)] = groups.flatMap(_.namedGroups())
 
   /** Returns all named capturing groups in a pattern.
     *
     * Nested groups are also listed recursively.
     */
-  def allGroupNames(): Seq[String] = groups.flatMap(_.allNames)
+  def allGroupNames(): Seq[String] = groups.flatMap(_.allNames())
 
   /** Returns all named capturing groups in a pattern.
     *
     * Nested groups are also listed recursively.
     */
-  def allNamedGroups(): Seq[(String, Group)] = groups.flatMap(_.allNamedGroups)
+  def allNamedGroups(): Seq[(String, Group)] = groups.flatMap(_.allNamedGroups())
 
   /** Returns a pattern string in which the groups are replaced by `f`. */
   def mapGroups(f: Group => String): String =
@@ -44,9 +44,9 @@ case class Pattern(patterns: Seq[String], groups: Seq[Group]) {
   def mapGroupsIn(instance: String)(f: (Group, String) => String): String = {
     import Pattern.RegexOps
     val indexToGroup: Map[Int, Group] =
-      allNamedGroups.zipWithIndex.map { case ((_, g), i) =>
+      allNamedGroups().view.zipWithIndex.map { case ((_, g), i) =>
         (i + 1) -> g
-      }(scala.collection.breakOut)
+      }.toMap
     r.mapGroupsIn(instance)(Function.uncurried(f.curried compose indexToGroup))
   }
 
@@ -68,7 +68,7 @@ case class Pattern(patterns: Seq[String], groups: Seq[Group]) {
   def apply(instance: String): MultiMap = {
     r.findFirstMatchIn(instance).map { m =>
       val map = new HashMap[String, ListBuffer[String]]
-      (allNamedGroups, m.subgroups).zipped.foreach { case ((g, _), s) =>
+      allNamedGroups().lazyZip(m.subgroups).foreach { case ((g, _), s) =>
         Option(s).foreach(s => map.getOrElseUpdate(g, new ListBuffer) += s)
       }
       MultiMap(map)

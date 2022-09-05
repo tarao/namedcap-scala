@@ -11,3 +11,10 @@ lib_managed/
 src_managed/
 project/boot/
 project/plugins/project/
+
+# metals
+.bloop/
+.bsp/
+.metals/
+
+.vscode/settings.json

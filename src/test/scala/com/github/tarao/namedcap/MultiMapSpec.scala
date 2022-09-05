@@ -1,8 +1,10 @@
 package com.github.tarao.namedcap
 
-import org.scalatest.{FunSpec, Matchers, OptionValues, Inside, Inspectors}
+import org.scalatest.{OptionValues, Inside, Inspectors}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class MultiMapSpec extends FunSpec with Matchers
+class MultiMapSpec extends AnyFunSpec with Matchers
     with OptionValues with Inside with Inspectors {
   describe("MultiMap") {
     describe("Constructor") {

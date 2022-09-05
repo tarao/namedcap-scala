@@ -138,7 +138,7 @@ License
 [CI-img]: https://github.com/tarao/namedcap-scala/actions/workflows/ci.yaml/badge.svg
 [coverage]: https://coveralls.io/github/tarao/namedcap-scala?branch=master
 [coverage-img]: https://coveralls.io/repos/tarao/namedcap-scala/badge.svg?branch=master&service=github
-[maven]: https://maven-badges.herokuapp.com/maven-central/com.github.tarao/namedcap_2.13
+[maven]: https://search.maven.org/artifact/com.github.tarao/namedcap_2.13
 [maven-img]: https://maven-badges.herokuapp.com/maven-central/com.github.tarao/namedcap_2.13/badge.svg
 
 [java-regex]: https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html

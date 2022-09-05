@@ -1,4 +1,4 @@
-namedcap [![Build Status][travis-img]][travis] [![Coverage status][coverage-img]][coverage] [![Maven Central][maven-img]][maven] [![Scaladoc][javadoc-img]][javadoc]
+namedcap [![Build Status][CI-img]][CI] [![Maven Central][maven-img]][maven]
 ========
 
 Provides named capturing groups with the following enhanced features.
@@ -15,12 +15,12 @@ Add dependency in your `build.sbt` as the following.
 
 ```scala
     libraryDependencies ++= Seq(
-      "com.github.tarao" %% "namedcap" % "0.0.2"
+      "com.github.tarao" %% "namedcap" % "1.0.0"
     )
 ```
 
 The library is available on [Maven Central][maven].  Currently,
-supported Scala versions are 2.11 and 2.12.
+supported Scala versions are 2.13.
 
 Basic usage
 -----------
@@ -134,13 +134,11 @@ License
 - Copyright (C) INA Lintaro
 - MIT License
 
-[travis]: https://travis-ci.org/tarao/namedcap-scala
-[travis-img]: https://img.shields.io/travis/tarao/namedcap-scala.svg?branch=master
+[CI]: https://github.com/tarao/namedcap-scala/actions/workflows/ci.yaml
+[CI-img]: https://github.com/tarao/namedcap-scala/actions/workflows/ci.yaml/badge.svg
 [coverage]: https://coveralls.io/github/tarao/namedcap-scala?branch=master
 [coverage-img]: https://coveralls.io/repos/tarao/namedcap-scala/badge.svg?branch=master&service=github
 [maven]: https://maven-badges.herokuapp.com/maven-central/com.github.tarao/namedcap_2.12
 [maven-img]: https://maven-badges.herokuapp.com/maven-central/com.github.tarao/namedcap_2.12/badge.svg
-[javadoc]: http://javadoc-badge.appspot.com/com.github.tarao/namedcap_2.12
-[javadoc-img]: http://javadoc-badge.appspot.com/com.github.tarao/namedcap_2.12.svg?label=scaladoc
 
 [java-regex]: https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html

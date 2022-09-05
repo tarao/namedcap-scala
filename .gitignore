@@ -16,5 +16,6 @@ project/plugins/project/
 .bloop/
 .bsp/
 .metals/
+metals.sbt
 
 .vscode/settings.json
